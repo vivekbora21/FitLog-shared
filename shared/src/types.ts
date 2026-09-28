@@ -115,6 +115,14 @@ export interface WorkoutSet {
   reps: number;
   rpe?: number | null;
   completed: boolean;
+  duration_seconds?: number | null;
+  distance_km?: number | null;
+  incline_percent?: number | null;
+  speed_kmh?: number | null;
+  resistance_level?: number | null;
+  calories?: number | null;
+  heart_rate?: number | null;
+  intensity?: string;
 }
 
 export interface WorkoutExercise {
@@ -239,10 +247,18 @@ export interface NutritionDay {
   total_fat: number;
 }
 
+export interface NutritionPlanInfo {
+  mode: JourneyMode | 'MAINTAIN';
+  mode_label: string;
+  target_type: 'MAX' | 'MIN' | 'TARGET';
+  program_name?: string | null;
+}
+
 export interface NutritionDayResponse {
   day: NutritionDay;
   targets: MacroTarget;
   yesterday_meals?: MealEntry[];
+  plan?: NutritionPlanInfo;
 }
 
 export interface MacroTarget {
