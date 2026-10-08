@@ -15,3 +15,5 @@ export const calculateMacroPercentage = (consumed: number, target: number): numb
   if (!target || target <= 0) return 0;
   return Math.min(100, Math.round((consumed / target) * 100));
 };
+
+export * from './contracts';
