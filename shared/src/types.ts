@@ -7,6 +7,7 @@ export interface UserProfile {
   activity_level?: 'SEDENTARY' | 'LIGHT' | 'MODERATE' | 'HIGH' | 'ATHLETE';
   fitness_goal: string;
   unit_preference: string;
+  timezone?: string;
   bio: string;
 }
 
@@ -804,19 +805,40 @@ export interface Blueprint {
   /** Signed kg/week pacing, e.g. -0.5 for a cut. */
   pacing_kg_per_week: number;
   phases: PlanPhase[];
-  /** Keyed "day_1".."day_7". */
+  /** Keyed "day_1".."day_7". Fallback content, used only when no split_slug is sent. */
   workout_templates: Record<string, BlueprintWorkoutExercise[]>;
   /** Keyed breakfast/lunch/snack/dinner. */
   meal_templates: Record<string, BlueprintMealSlot>;
+  /** Slug of the TrainingSplit this blueprint pairs with by default, if any. */
+  default_training_split_slug: string | null;
   is_active: boolean;
   display_order: number;
   created_at: string;
   updated_at: string;
 }
 
+/**
+ * How weekly training volume is organized across days (bro split, push/pull/legs,
+ * upper/lower, full body, ...) - independent of a Blueprint's mode. Paired with a
+ * Blueprint via split_slug on preview/create to swap its workout content in.
+ */
+export interface TrainingSplit {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  days_per_week: number;
+  /** Keyed "day_1".."day_7". */
+  workout_templates: Record<string, BlueprintWorkoutExercise[]>;
+  is_active: boolean;
+  display_order: number;
+}
+
 export interface PlanPreviewPayload {
   blueprint_slug?: string;
   mode?: JourneyMode;
+  /** Optional TrainingSplit slug (e.g. "push-pull-legs") to override the blueprint's own workout_templates. */
+  split_slug?: string;
   duration_days: number;
   days_per_week: number;
   weekdays?: number[];
@@ -857,6 +879,8 @@ export interface PlanRoadmap {
     goal_weight_kg: number | null;
     daily_calories: number;
     weekly_rate_kg: number;
+    /** Slug of the TrainingSplit actually used for workout content, or null if the blueprint's own fallback was used. */
+    training_split: string | null;
   };
   feasibility: {
     status: FeasibilityStatus;
